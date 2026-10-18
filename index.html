@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cyzexx — kripto bozor, grafiklar va yangiliklar</title>
+<meta name="description" content="Cyzexx: kripto narxlari, TradingView grafiklari, CoinDesk yangiliklari va Telegram signal kanali.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--ice:#eef3f7;--ink:#0d1b2a;--cyan:#0aa5c0;--amber:#f2a93b;--slate:#5b6b7b;--card:#fff;--line:#d5dee6;--up:#0e9f6e;--dn:#d9423a}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--ice);color:var(--ink);font:16px/1.55 Manrope,system-ui,-apple-system,"Segoe UI",sans-serif}
+a{color:inherit}
+.wrap{max-width:1100px;margin:0 auto;padding:0 16px}
+header{background:var(--ink);color:#fff}
+header .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-top:14px;padding-bottom:14px}
+.logo{font-weight:800;font-size:22px;letter-spacing:.02em;text-decoration:none}
+.logo i{font-style:normal;color:var(--cyan)}
+nav{display:flex;gap:16px;font-size:14px}
+nav a{text-decoration:none;opacity:.85}nav a:hover{opacity:1}
+.tick{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:16px 0}
+.tick div{background:var(--card);padding:10px 12px}
+.tick b{display:block;font-size:13px;color:var(--slate);font-weight:600}
+.tick span{font-weight:800;font-size:17px}
+.tick small{margin-left:6px;font-weight:600}
+.up{color:var(--up)}.dn{color:var(--dn)}
+h2{font-size:22px;margin:34px 0 12px;font-weight:800}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.tabs button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:7px 14px;border-radius:8px;font:inherit;font-weight:600;cursor:pointer}
+.tabs button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+#chart{height:520px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--card)}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+table{width:100%;border-collapse:collapse;min-width:520px}
+th,td{padding:10px 12px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font-size:13px;color:var(--slate);font-weight:600}
+th:nth-child(2),td:nth-child(2){text-align:left}
+td:nth-child(2) img{width:20px;height:20px;vertical-align:-5px;margin-right:8px}
+tr:last-child td{border-bottom:0}
+.news a{display:block;padding:12px 14px;background:var(--card);border:1px solid var(--line);border-radius:10px;margin-bottom:8px;text-decoration:none}
+.news a:hover{border-color:var(--cyan)}
+.news small{display:block;color:var(--slate);margin-top:2px}
+.muted{color:var(--slate)}
+.signal{background:var(--ink);color:#fff;border-radius:14px;padding:26px;display:flex;gap:20px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.signal h2{margin:0 0 6px;color:#fff}
+.signal p{margin:0;max-width:520px;color:#c3d0dc}
+.btn{display:inline-block;background:var(--amber);color:var(--ink);font-weight:800;padding:14px 24px;border-radius:10px;text-decoration:none}
+.btn:hover{filter:brightness(1.07)}
+.btn:focus-visible,a:focus-visible,button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
+footer{margin:40px 0 24px;font-size:13px;color:var(--slate)}
+@media(max-width:600px){#chart{height:420px}.signal{padding:20px}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <a class="logo" href="#">CYZE<i>XX</i></a>
+  <nav><a href="#chart-sec">Grafik</a><a href="#market">Bozor</a><a href="#news">Yangiliklar</a><a href="#signals">Signallar</a></nav>
+</div></header>
+
+<main class="wrap">
+  <div class="tick" id="tick" aria-live="polite"></div>
+
+  <section id="chart-sec">
+    <h2>Jonli grafik</h2>
+    <div class="tabs" id="tabs"></div>
+    <div id="chart"></div>
+  </section>
+
+  <section id="market">
+    <h2>Bozor</h2>
+    <div class="tbl"><table>
+      <thead><tr><th>#</th><th>Koin</th><th>Narx</th><th>24 soat</th><th>Bozor qiymati</th></tr></thead>
+      <tbody id="rows"><tr><td colspan="5" class="muted">Yuklanmoqda…</td></tr></tbody>
+    </table></div>
+  </section>
+
+  <section id="news" class="news">
+    <h2>Kripto yangiliklari</h2>
+    <div id="newslist"><p class="muted">Yuklanmoqda…</p></div>
+    <p class="muted" style="font-size:13px">Sarlavhalar CoinDesk’dan olinadi, havola manba saytiga olib boradi.</p>
+  </section>
+
+  <section id="signals" style="margin-top:34px">
+    <div class="signal">
+      <div>
+        <h2>Signal kanali</h2>
+        <p>Savdo g‘oyalari va bozor tahlillari Telegram kanalimizda e’lon qilinadi.</p>
+      </div>
+      <a class="btn" href="https://t.me/Cyzexx_Alpha" target="_blank" rel="noopener">Telegram kanalga o‘tish</a>
+    </div>
+  </section>
+
+  <footer>
+    Bu sayt moliyaviy maslahat bermaydi. Kripto bozori yuqori xavfli, qarorlarni o‘zingiz mustaqil qabul qilasiz. Narxlar CoinGecko, grafiklar TradingView’dan olinadi.
+  </footer>
+</main>
+
+<script src="https://s3.tradingview.com/tv.js"></script>
+<script>
+var PAIRS={BTC:'BINANCE:BTCUSDT',ETH:'BINANCE:ETHUSDT',SOL:'BINANCE:SOLUSDT',BNB:'BINANCE:BNBUSDT',XRP:'BINANCE:XRPUSDT'};
+function $(i){return document.getElementById(i)}
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function usd(n){return n>=1?'$'+n.toLocaleString('en-US',{maximumFractionDigits:2}):'$'+n.toPrecision(3)}
+function pct(n){if(n==null)return '—';return '<span class="'+(n>=0?'up':'dn')+'">'+(n>=0?'+':'−')+Math.abs(n).toFixed(2)+'%</span>'}
+
+function drawChart(sym){
+  $('chart').innerHTML='';
+  if(!window.TradingView){$('chart').innerHTML='<p class="muted" style="padding:16px">Grafik yuklanmadi. Internetni tekshiring.</p>';return}
+  new TradingView.widget({container_id:'chart',symbol:sym,interval:'60',theme:'light',style:'1',locale:'en',autosize:true,allow_symbol_change:true,hide_side_toolbar:false});
+}
+var tabs=$('tabs');
+Object.keys(PAIRS).forEach(function(k,i){
+  var b=document.createElement('button');b.textContent=k;if(i===0)b.className='on';
+  b.onclick=function(){Array.prototype.forEach.call(tabs.children,function(x){x.className=''});b.className='on';drawChart(PAIRS[k])};
+  tabs.appendChild(b)});
+drawChart(PAIRS.BTC);
+
+function loadMarket(){
+  fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=20&page=1&price_change_percentage=24h')
+  .then(function(r){if(!r.ok)throw 0;return r.json()})
+  .then(function(d){
+    $('tick').innerHTML=d.slice(0,6).map(function(c){return '<div><b>'+esc(c.symbol.toUpperCase())+'</b><span>'+usd(c.current_price)+'</span><small>'+pct(c.price_change_percentage_24h)+'</small></div>'}).join('');
+    $('rows').innerHTML=d.map(function(c,i){return '<tr><td>'+(i+1)+'</td><td><img src="'+esc(c.image)+'" alt="">'+esc(c.name)+' <span class="muted">'+esc(c.symbol.toUpperCase())+'</span></td><td>'+usd(c.current_price)+'</td><td>'+pct(c.price_change_percentage_24h)+'</td><td>$'+(c.market_cap/1e9).toFixed(1)+' mlrd</td></tr>'}).join('');
+  }).catch(function(){
+    $('rows').innerHTML='<tr><td colspan="5" class="muted">Narxlarni olib bo‘lmadi. Birozdan so‘ng yangilang.</td></tr>';
+  });
+}
+loadMarket();setInterval(loadMarket,90000);
+
+function loadNews(){
+  var feed=encodeURIComponent('https://www.coindesk.com/arc/outboundfeeds/rss/');
+  fetch('https://api.rss2json.com/v1/api.json?rss_url='+feed)
+  .then(function(r){return r.json()})
+  .then(function(j){
+    if(!j.items||!j.items.length)throw 0;
+    $('newslist').innerHTML=j.items.slice(0,15).map(function(n){
+      var d=n.pubDate?new Date(n.pubDate.replace(' ','T')+'Z').toLocaleString('uz-UZ',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'';
+      return '<a href="'+esc(n.link)+'" target="_blank" rel="noopener">'+esc(n.title)+'<small>CoinDesk'+(d?' · '+esc(d):'')+'</small></a>'}).join('');
+  }).catch(function(){
+    $('newslist').innerHTML='<p class="muted">Yangiliklarni yuklab bo‘lmadi. <a href="https://www.coindesk.com" target="_blank" rel="noopener">CoinDesk</a> saytiga o‘ting.</p>';
+  });
+}
+loadNews();
+</script>
+</body>
+</html>
